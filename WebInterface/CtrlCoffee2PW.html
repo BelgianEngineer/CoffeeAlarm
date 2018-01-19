@@ -1,0 +1,425 @@
+<!-- IOT Particle photon - Coffee machine - Quentin Mannes -->
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML Basic 1.1//EN"
+    "http://www.w3.org/TR/xhtml-basic/xhtml-basic11.dtd">
+<html>
+
+<head>
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+	
+	<style>
+		body
+		{
+			background-color: #F5ECE1;
+			color: #7A4209;
+			font-family: Helvetica, Arial, sans-serif;
+		}
+		
+		h1, h2, h3
+		{
+			margin: 0px;
+		}
+		
+		select
+		{
+			border:1px solid #7A4209;
+			background-color: #f9f3ec;	
+		}
+		
+		input[type=checkbox] + label
+		{
+			color: #7A4209;
+			opacity: 0.4;
+			font-weight: normal;
+		}
+		input[type=checkbox]:checked + label
+		{
+			font-size: 15px;
+			opacity: 1;
+			font-weight: bold;
+		}
+		
+		button 
+		{
+			background-color:#ecdbc6;
+			border-radius:7px;
+			border:1px solid #7A4209;
+			display:inline-block;
+			cursor:pointer;
+			color:#7A4209;
+			font-family:Helvetica, Arial;
+			font-weight:bold;
+			padding:2px 5px;
+		}
+		button:hover
+		{
+			background-color: #7A4209;
+			color: #F5ECE1;	
+		}
+		button:active
+		{
+			background-color: #ecdbc6;
+			color: #7A4209;	
+		}
+		
+		.makeCoffeeButton
+		{
+			border:3px solid #7A4209;
+			border-radius:0px;
+			font-weight:bold;	
+			font-size: 20px;
+			padding: 10px 0px;
+			width: 100px;
+		}
+		
+		.messageInput
+		{
+			border:1px solid #7A4209;
+			background-color: #f9f3ec;
+			color: #7A4209;
+		}
+			
+		.disabled
+		{
+			pointer-events: none;
+			opacity: 0.4;
+		}
+		
+		#container
+		{
+			width: 450px;
+			margin-left: auto;
+			margin-right: auto;
+		}
+	
+		#header
+		{
+			padding: 10px;
+			background-color: #7A4209;
+			color: #F5ECE1;
+			text-align: center;
+		}
+		
+		#content
+		{
+			padding: 10px;	
+		}
+		
+		#leftSide
+		{
+			width: 120px;
+			float: left;
+		}
+		
+		#nav
+		{
+		}
+		
+		#nav ul
+		{
+			list-style-type: none;
+			padding: 0px;
+		}
+		
+		#bigButton
+		{
+			padding: 20px 0px;
+		}
+		
+		#main
+		{
+			width: 300px;
+			float: right;
+		}
+		
+		#settings
+		{
+		}
+		
+		#status
+		{
+		}
+		
+		#footer
+		{
+			clear: both;
+			padding: 10px;
+			background-color: #7A4209;
+			color: #F5ECE1;
+			text-align: right;
+		}
+		
+	</style>
+	
+</head>
+
+<body onload="swapContent('leftContent','login'); getAlarmStatus(); timeList(23,'hourList','hour'); timeList(59,'minuteList','minute')">
+
+	<div id="container">
+		<div id="header">
+			<h1>Quentin's Authentic Coffee</h1>	
+		</div>
+		<div id="content">
+			<div id="leftSide">
+				<div id="nav">
+					<h3>Navigation</h3>
+					<ul>
+						<li>Nav 1</li>
+						<li>Settings</li>
+						<li>Nav 3</li>
+					</ul>
+				</div>
+				<div id="leftContent">
+				</div>
+				<div id="hidden" style="display:none">
+					<div id="login">
+						PWD HERE
+						<button onclick="swapContent('leftContent','bigButton'); enable('settings')">Login</button>
+					</div>
+					<div id="bigButton">
+						<center>
+							<button id="brewButton" class="makeCoffeeButton" onclick="brew(); disable('settings')">Make Coffee</button>
+						</center>
+					</div>
+				</div>
+			</div>
+			<div id="main">
+				<div id="settings" class="disabled">
+					<fieldset style="border: 1px #7A4209 solid">
+					<legend style="margin-left: 1em; padding: 0.2em 0.8em "><h3>Settings</h3></legend>
+					
+						Alarm active 
+						<input type="checkbox" name="onoff" id="onoff" onchange="alarmOnOff(this)">
+						<label for="onoff"> on </label>			
+
+						<br>
+						Alarm time
+						<span id="hourList"></span>				
+						:
+						<span id="minuteList"></span>
+						<button id="AlarmButton" onclick="setAlarm(getElementById('hour').value + getElementById('minute').value)">Set</button>
+						
+						<br>
+						Message
+						<input type="text" id="yourMessage" class="messageInput" value="Your message" onfocus="this.value=''" maxlength="16">
+						<button id="messageButton" onclick="setMessage(getElementById('yourMessage').value)">Set</button>
+					</fieldset>
+				</div>
+				<div id="status">
+					<fieldset style="border: 1px #7A4209 solid">
+					<legend style="margin-left: 1em; padding: 0.2em 0.8em "><h3>Status</h3></legend>				
+						<strong>Alarm status:</strong> <span id="alarmStatus"></span>
+						<br>
+						<strong>Alarm time:</strong> <span id="alarmHour"></span><span id="alarmMinute"></span>
+						<br>
+						<strong>Message:</strong> <span id="message"></span>
+						<br>
+						<strong>Device status: TO BE DONE</strong>
+						<br>
+					</fieldset>
+					<br>
+				</div>
+			</div>	
+		</div>
+		<div id="footer">
+			Sofia birba Carica 1994.			
+		</div>
+	</div>
+
+
+
+		
+	<script type="text/javascript">
+	
+		<!-- ACCESS CREDENTIALS -->
+		var deviceID    = "DEVICEID";
+		var accessToken = "ACCESSTOKEN";
+
+		<!-- Get value every period -->
+		setInterval(getAlarmStatus, 20000);    //Check value at startup then very low freq but recheck after every corresponding action
+		
+		// ------------------ WEB DISPLAY FUNCTIONS ----------------
+		
+		<!-- DISPLAY AFTER PASS -->
+		//function accessForm()
+		//{
+		//	document.getElementById('controlPage').style.display = 'none';
+		//}
+		
+		<!-- GENERATE LISTS -->
+		function timeList(end, idPlace, idList)
+		{
+			var timeList = '<select name="'+idList+'" id="'+idList+'" size="1">';
+			for (var t=0; t <= end; t++)
+			{
+				if (t<10)
+				{
+					timeList+='<option value="0'+t+'">0'+t+'</option>';
+				}
+				else
+				{
+					timeList+='<option value="'+t+'">'+t+'</option>';
+				}
+			}
+			timeList+='</select>';
+			document.getElementById(idPlace).innerHTML = timeList;
+		}
+		
+		<!-- SWAP DIV CONTENT -->
+		function swapContent(before, after)
+		{
+			const main = document.getElementById(before);
+			const div = document.getElementById(after);
+			const clone = div.cloneNode(true);
+			
+			while (main.firstChild) main.firstChild.remove();
+			
+			main.appendChild(clone);
+		}
+		
+		function enable(id)
+		{
+			document.getElementById(id).classList.remove("disabled");
+		}
+		
+		function disable(id)
+		{
+			document.getElementById(id).classList.add("disabled");
+		}
+		
+		// ----------------------- VARIABLES -----------------------
+		
+		<!-- ALARM STATUS -->
+		function getAlarmStatus()
+		{
+			var getFunc = "alarmStatus";
+		
+			var requestURL = "https://api.particle.io/v1/devices/" + deviceID + "/" + getFunc + "/?access_token=" + accessToken;
+			$.getJSON(requestURL, function(jsonString) 
+			{
+				document.getElementById('alarmStatus').innerHTML = jsonString.result;
+				if (jsonString.result == "on")
+				{
+					document.getElementById("onoff").checked = true;
+				}
+				else
+				{
+					document.getElementById("onoff").checked = false;
+				}	
+			});	
+			
+			getAlarmTime();
+		}
+		
+		<!-- ALARM TIME -->
+		function getAlarmTime() 
+		{
+			var getFunc = "alarmHour";
+		
+			var requestURL = "https://api.particle.io/v1/devices/" + deviceID + "/" + getFunc + "/?access_token=" + accessToken;
+			$.getJSON(requestURL, function(jsonString) 
+			{
+				if (jsonString.result<10)
+				{
+					document.getElementById('alarmHour').innerHTML = "0"+jsonString.result+":";
+				}
+				else
+				{
+					document.getElementById('alarmHour').innerHTML = jsonString.result+":";
+				}
+			});
+			
+			
+			var getFunc = "alarmMinute";
+		
+			var requestURL = "https://api.particle.io/v1/devices/" + deviceID + "/" + getFunc + "/?access_token=" + accessToken;
+			$.getJSON(requestURL, function(jsonString) 
+			{
+				if (jsonString.result<10)
+				{
+					document.getElementById('alarmMinute').innerHTML = "0"+jsonString.result;
+				}
+				else
+				{
+					document.getElementById('alarmMinute').innerHTML = jsonString.result;
+				}
+			});
+			
+			getMessage();
+		}
+		
+		<!-- MESSAGE -->
+		function getMessage() 
+		{
+			var getFunc = "yourMessage";
+		
+			var requestURL = "https://api.particle.io/v1/devices/" + deviceID + "/" + getFunc + "/?access_token=" + accessToken;
+			$.getJSON(requestURL, function(jsonString) 
+			{
+				document.getElementById('message').innerHTML = jsonString.result;
+			});				
+		}
+		
+		// ------------------------ ACTIONS ------------------------
+		
+		<!-- ALARM ON OR OFF -->
+		function alarmOnOff(status) 
+		{
+		var setFunc = "alarmOnOff";
+		if (status.checked)
+		{
+			var paramStr = "on";
+		}
+		else
+		{
+			var paramStr = "off";
+		}
+		requestURL = "https://api.particle.io/v1/devices/" +deviceID + "/" + setFunc + "/";
+		$.post( requestURL, { params: paramStr, access_token: accessToken });
+			
+		getAlarmStatus();
+		}
+	 
+		<!-- SET ALARM TIME -->
+		function setAlarm(HHMM) 
+		{
+		var setFunc = "setAlarm";
+		var paramStr = HHMM;
+
+		var requestURL = "https://api.particle.io/v1/devices/" +deviceID + "/" + setFunc + "/";
+		$.post( requestURL, { params: paramStr, access_token: accessToken });
+			
+			getAlarmTime()
+		}
+		
+		<!-- SET MESSAGE -->
+		function setMessage(yourMessage) 
+		{
+		var setFunc = "setMessage";
+		var paramStr = yourMessage;
+
+		var requestURL = "https://api.particle.io/v1/devices/" +deviceID + "/" + setFunc + "/";
+		$.post( requestURL, { params: paramStr, access_token: accessToken });
+			
+			getMessage()
+		}
+		
+		<!-- START BREW -->
+		function brew() 
+		{
+		var setFunc = "brew";
+		var paramStr = "Coffee ready!";
+
+		var requestURL = "https://api.particle.io/v1/devices/" +deviceID + "/" + setFunc + "/";
+		$.post( requestURL, { params: paramStr, access_token: accessToken });
+		}
+		
+		
+	</script>
+ 
+</body>
+
+</html>
